@@ -4,7 +4,6 @@ from time import sleep
 
 from near import near
 from rand_coord import rand_coord
-from within import within
 
 snake_ch = 'X'
 head_ch = 'O'
@@ -15,15 +14,19 @@ timeout = 250
 
 dirs = ( (+1, 0), (-1, 0), (0, -1), (0, +1) ) # Down, up, left, right
 
-def step(stdscr, snake, direction):
+def step(stdscr, snake, direction, food):
 	new = list(snake[-1])
 	for i, val in enumerate(dirs[direction]):
 		new[i] += val
 
 	new = tuple(new)
 
-	if (new in snake) or not (within(new, stdscr.getmaxyx())):
-		return -1
+	if new in snake:
+		ret = -1
+
+	if food in snake:
+		ret = 1
+		food = 
 
 	snake.append(new)
 	stdscr.addch(*snake[-1], snake_ch)
@@ -31,7 +34,7 @@ def step(stdscr, snake, direction):
 	stdscr.addch(*snake[0], ' ')
 	snake.pop(0)
 
-	return 0
+	return ret
 
 def main(stdscr):
 	max_coord = stdscr.getmaxyx()
@@ -51,6 +54,15 @@ def main(stdscr):
 		stdscr.addch(*coord, snake_ch)
 	stdscr.addch(*snake[-1], head_ch)
 
+	food = []
+	while True:
+		food = rand_coord(max_coord)
+
+		if food not in snake:
+			break
+
+	stdscr.addch(*food, food_ch)
+
 	key_down = 258
 
 	direction = stdscr.getch() - key_down
@@ -62,22 +74,20 @@ def main(stdscr):
 		ch = stdscr.getch()
 
 		if ch == -1:
-			ret = step(stdscr, snake, direction)
+			ret = step(stdscr, snake, direction, food)
 
 			if ret != 0:
-				return ret
+				break
 
 		elif ch - key_down in range(4):
 			direction = ch - key_down
-			ret = step(stdscr, snake, direction)
+			ret = step(stdscr, snake, direction, food)
 
 			if ret != 0:
-				return ret
+				break
 
 		elif ch == ord('q'):
-			return 0
+			break
 
 if __name__ == '__main__':
-	ret = curses.wrapper(main)
-
-	print(ret)
+	curses.wrapper(main)
