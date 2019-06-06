@@ -1,4 +1,9 @@
-from within import within
+def check(coord, max_coord):
+	for i, val in enumerate(coord):
+		if not( 0 <= val < max_coord[i] ):
+			return False
+
+	return True
 
 def near(coord, max_coord):
 	delta = (-1, 0, 1)
@@ -15,7 +20,7 @@ def near(coord, max_coord):
 
 			new_coord = tuple(new_coord)
 
-			if within(new_coord, max_coord):
+			if check(new_coord, max_coord):
 				ret.append(new_coord)
 
 	return ret
